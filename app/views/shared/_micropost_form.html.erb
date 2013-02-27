@@ -1,7 +1,28 @@
 <%= form_for(@micropost) do |f| %>
 <%= render 'shared/error_messages', object: f.object %>
 <div class="field">
-<%= f.text_area :content, placeholder: "Compose new micropost..." %>
+<!-- <%= f.text_area :content, placeholder: "Compose new micropost..." %> -->
+
+<%= f.text_area :content, placeholder: "Compose new micropost...", :onkeyup => "DjCheckMaxlength(this);", :maxlength => 30 %>
+<input type="text" name="displaycount" size="3">
+
 </div>
 <%= f.submit "Post", class: "btn btn-large btn-primary" %>
 <% end %>
+
+
+<script language="javascript" type="text/javascript">
+function DjCheckMaxlength(oInObj)
+{
+      var iMaxLen = parseInt(oInObj.getAttribute('maxlength'));
+      var iCurLen = oInObj.value.length;
+
+      if ( oInObj.getAttribute && iCurLen > iMaxLen )
+      {
+          oInObj.value = oInObj.value.substring(0, iMaxLen);
+      }
+
+    oInObj.form.displaycount.value = oInObj.value.length
+
+} //@ END OF DjCheckMaxlength()
+</script>

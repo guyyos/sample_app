@@ -20,7 +20,7 @@ describe "User pages" do
 			end
 			describe "with valid information" do
 				before do
-					fill_in "user_name", with: "Example User"
+					fill_in "user_name", with: "ExampleUser"
 					fill_in "user_email", with: "user@example.com"
 					fill_in "user_password", with: "foobar"
 					fill_in "user_password_confirmation", with: "foobar"
@@ -144,7 +144,7 @@ describe "User pages" do
 						it { should have_content('error') }
 					end
 					describe "with valid information" do
-						let(:new_name) { "New Name" }
+						let(:new_name) { "newname" }
 						let(:new_email) { "new@example.com" }
 						before do
 							fill_in "Name", with: new_name

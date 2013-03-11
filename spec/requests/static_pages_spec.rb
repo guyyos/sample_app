@@ -34,6 +34,20 @@ describe "Static pages" do
 				it { should have_link("0 following", href: following_user_path(user)) }
 				it { should have_link("1 followers", href: followers_user_path(user)) }
 			end
+
+			describe "multiple follower/following counts" do
+				before do
+					30.times { |i|
+						user2 = FactoryGirl.create(:user) 
+						user2.follow!(user)
+					}
+
+					visit root_path
+				end
+
+				it { should have_link("30 followers", href: followers_user_path(user)) }
+			end 
+
 		end
 	end
 	describe "Help page" do

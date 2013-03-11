@@ -8,6 +8,8 @@ class MicropostsController < ApplicationController
 	end
 
 	def create
+		logger.debug "New micropost guy"
+
 		@micropost = current_user.microposts.build(params[:micropost])
 		if @micropost.save
 			flash[:success] = "Micropost created!"
@@ -29,4 +31,6 @@ class MicropostsController < ApplicationController
 		@micropost = Micropost.find(params[:id])
 		current_user? @micropost.user
 	end 
+
+	
 end

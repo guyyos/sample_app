@@ -7,13 +7,19 @@ namespace :db do
 	end
 end
 def make_users
-	admin = User.create!(name: "Example User",
+	admin = User.create!(name: "example_user",
 		email: "example@railstutorial.org",
 		password: "foobar",
 		password_confirmation: "foobar")
 	admin.toggle!(:admin)
 	99.times do |n|
-		name = Faker::Name.name
+		fname = Faker::Name.first_name
+		lname = Faker::Name.last_name
+		name = fname.gsub(/[\W]/,'')+"_"+lname.gsub(/[\W]/,'')
+		name = name.downcase
+
+		puts name
+
 		email = "example-#{n+1}@railstutorial.org"
 		password = "password"
 		User.create!(name: name,

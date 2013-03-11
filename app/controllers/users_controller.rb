@@ -18,6 +18,7 @@ class UsersController < ApplicationController
 	end
 	
 	def create
+		puts "guy1"
 		@user = User.new(params[:user])
 		if @user.save
 			sign_in @user

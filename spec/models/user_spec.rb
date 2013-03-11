@@ -12,7 +12,7 @@
 require 'spec_helper'
 describe User do
 	before do
-		@user = User.new(name: "Example User", email: "user@example.com", password: "foobar", password_confirmation: "foobar")
+		@user = User.new(name: "ExampleUser", email: "user@example.com", password: "foobar", password_confirmation: "foobar")
 	end
 	subject { @user }
 	it { should respond_to(:name) }
@@ -56,6 +56,21 @@ describe User do
 		before { @user.name = "a" * 51 }
 		it { should_not be_valid }
 	end
+
+	describe "when name contains space" do
+		before { @user.name = "Guy Yos" }
+		it { should_not be_valid }
+	end
+
+	describe "when email address is already taken" do
+		before do
+			user_with_same_name = @user.dup
+			user_with_same_name.name = @user.name.upcase
+			user_with_same_name.save
+		end
+		it { should_not be_valid }
+	end
+
 
 	describe "when password is not present" do
 		before { @user.password = @user.password_confirmation = " " }
@@ -142,26 +157,49 @@ describe User do
 				end
 			end
 
+
+
 			describe "status" do
-				let(:unfollowed_post) do
+				let!(:unfollowed_post) do
 					FactoryGirl.create(:micropost, user: FactoryGirl.create(:user))
 				end
 
-				let(:followed_user) { FactoryGirl.create(:user) }
+				let!(:followed_user) { FactoryGirl.create(:user) }
 				before do
 					@user.follow!(followed_user)
-					3.times { followed_user.microposts.create!(content: "Lorem ipsum") }
+					3.times { followed_user.microposts.create!(content: "Lorem ipsum1") }
 				end
 
+				let!(:reply_user) { FactoryGirl.create(:user) }
+				let!(:unfollowed_post_of_reply) do
+					reply_user.microposts.create!(content: "Lorem ipsum2")
+				end	
+
+				let!(:post_of_reply) do
+					reply_user.microposts.create!(content: "@"+@user.name+" this is reply to you")
+				end				
 
 				its(:feed) { should include(newer_micropost) }
 				its(:feed) { should include(older_micropost) }
 				its(:feed) { should_not include(unfollowed_post) }
+				its(:feed) { should_not include(unfollowed_post_of_reply) }
+				its(:feed) { should include(post_of_reply) }
 
 				its(:feed) do
 					followed_user.microposts.each do |micropost|
 						should include(micropost)
 					end
+				end
+
+				it "should destroy associated relationships" do
+					relationships = @user.relationships
+
+					@user.destroy
+
+					relationships.each do |relationship|
+						Relationship.find_by_id(relationship.id).should be_nil
+					end
+
 				end
 
 			end
@@ -178,7 +216,7 @@ describe User do
 					subject { other_user }
 					its(:followers) { should include(@user) }
 				end
-				
+
 				describe "and unfollowing" do
 					before { @user.unfollow!(other_user) }
 					it { should_not be_following(other_user) }
@@ -187,5 +225,5 @@ describe User do
 			end
 		end
 	end
-	
+
 
